@@ -1,0 +1,735 @@
+\chapter{Installation}
+
+\section{Obtaining ADIOS}
+
+You can download the latest version from the following website
+
+\begin{lstlisting}[language={}]
+http://www.olcf.ornl.gov/center-projects/adios
+\end{lstlisting}
+
+
+\section{Quick Installation}
+
+\subsection{Quick installation with Automake}
+
+To get started with ADIOS, the following steps can be used to configure, build,
+test, and install the ADIOS library, header files, and support programs.
+
+\begin{lstlisting}
+cd trunk/
+./configure -prefix=<install-dir> --with-mxml=<mxml-location>
+make
+make install
+\end{lstlisting}
+
+Note: There is a runconf batch script in the trunk set up for our machines. Studying
+it can help you setting up the appropriate environment variables and configure
+options for your system.
+
+\subsubsection{Linux cluster}
+
+The following is a snapshot of the batch scripts on Sith, an Intel-based Infiniband
+cluster running Linux:
+
+\begin{lstlisting}
+export MPICC=mpicc
+export MPICXX=mpiCC
+export MPIFC=mpif90
+export CC=pgcc
+export CXX=pgCC
+export FC=pgf90
+export CFLAGS="-fPIC"
+
+./configure --prefix = <location for ADIOS software installation>
+            --with-mxml=<location of mini-xml installation>
+\end{lstlisting}
+%            --with-hdf5=<location of HDF5 installation>
+%            --with-netcdf=<location of netCDF installation>
+
+
+The compiler pointed by MPICC is used to build all the parallel codes and tools
+using MPI, while the compiler pointed by CC is used to build the sequential tools.
+In practice, mpicc uses the compiler pointed by CC and adds the MPI library automatically.
+On clusters, this makes no real difference, but on Bluegene, or Cray XT/XK, parallel
+codes are built for compute nodes, while the sequential tools are built for the
+login nodes. The -fPIC compiler flag is needed only if you build the
+Matlab language bindings later.
+
+
+\subsubsection{Cray supercomputers}
+
+To install ADIOS on a Cray system, the right compiler commands and configure flags
+need to be set. The required and some recommended commands for ADIOS installation on
+Titan are as follows:
+
+\begin{lstlisting}
+export CC=cc
+export CXX=CC
+export FC=ftn
+./configure --prefix = <location for ADIOS software installation>
+            --with-mxml=<location of mini-xml installation>
+\end{lstlisting}
+%            --with-hdf5=<location of HDF5 installation>
+%            --with-netcdf=<location of netCDF installation>
+
+\subsection{Quick installation with CMake}
+
+CMake is an alternative way used to configure, build, test, and install the ADIOS library,
+header files, and support programs. CMake 2.8.0 or higher is required to build ADIOS.
+
+\begin{lstlisting}
+cd trunk/
+source cmake_init
+mkdir build
+cd build
+cmake ..
+make
+\end{lstlisting}
+
+Note: The cmake\_init batch script in the trunk set up for our machines. You need to
+set up the appropriate environment variables and configure options for your system.
+
+The nice and highly recommended feature of CMake is the ability of out-of-source build.
+More specifically, all generated temporary files, binary executables and new files are within
+the "build" folder, a completely separate directory, which will make the source tree without cluttering up. To do this,
+first create a separate build directory (see "mkdir build")
+and then switch to the build directory and run cmake with an argument for the ADIOS source directory.
+
+If crossing-compiling is required for a certain system, for example the intel compiler on Titan,
+there is another cmake variable CMAKE\_TOOLCHAIN\_FILE need to be initialized. This changes the cmake
+command from
+
+\begin{lstlisting}
+cmake ..
+\end{lstlisting}
+to
+\begin{lstlisting}
+cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain.cmake ..
+\end{lstlisting}
+
+To install ADIOS on a Cray XK6, the right compiler commands and configure flags
+need to be set. The required commands for ADIOS installation on Titan are as follows:
+
+\begin{lstlisting}
+export CC=cc
+export CXX=CC
+export FC=ftn
+export MXML_DIR=<location of mini-xml installation>
+cmake <ADIOS_SOURCEDIR>
+\end{lstlisting}
+%export SEQ_HDF5_DIR=<location of HDF5 installation>
+%export SEQ_NC_DIR=<location of NETCDF installation>
+
+
+\subsubsection{Linux cluster}
+
+The following is a snapshot of the batch scripts on Sith, an Intel-based Infiniband
+cluster running Linux. Note the difference between the Automake and CMake builds:
+CMake uses MPI compilers for the complete build in the current version of ADIOS.
+
+\begin{lstlisting}
+export CC=mpicc
+export CXX=mpiCC
+export FC=mpif90
+export CFLAGS="-fPIC"
+cmake <ADIOS_SOURCEDIR>
+\end{lstlisting}
+
+
+\section{ADIOS Dependencies}
+
+\subsection{Mini-XML parser (required)}
+
+The Mini-XML library is used to parse XML configuration files. Mini-XML can be
+downloaded from \url{http://www.msweet.org/downloads.php?L+Z3}. ADIOS works with
+versions 2.5, 2.6, 2.7 and 2.9. Note that ADIOS does NOT work with version 2.8.
+If you don't have it already installed we suggest to use 
+\url{http://www.msweet.org/files/project3/mxml-2.9.tar.gz}.
+
+\subsection{MPI and MPI-IO (required)}
+
+MPI and MPI-IO is required for ADIOS.
+
+Currently, most large-scale scientific applications rely on the Message Passing
+Interface (MPI) library to implement communication among processes. For instance,
+when the Portable Operating System Interface (POSIX) is used as transport method,
+the rank of each processor in the same communication group, which needs to be retrieved
+by the certain MPI APIs, is commonly used in defining the output files. MPI-IO
+can also be considered the most generic I/O library on large-scale platforms.
+
+\subsection{Python (required)}
+
+The XML processing utility \verb+utils/gpp/gpp.py+ is a code written in python using xml.dom.minidom.
+It is used to generate C or Fortran code from the XML configuration files that
+can be included in the application source code.  Examples and tests will not build
+without Python.
+
+\subsection{Fortran90 compiler (optional)}
+
+The Fortran~90 interface and example codes are compiled only if there is an f90
+compiler available. By default it is required but you can disable it with the option
+\verb+--disable-fortran+ (Automake) or \verb+export BUILD_FORTRAN=OFF+ (CMake).
+
+\subsection{Serial NetCDF-3 (optional)}
+
+The bp2ncd converter utility to NetCDF format is built only if NetCDF~is available.
+ Currently ADIOS uses the NetCDF-3 library. Use the option \verb+--with-netcdf=<path>+
+or ensure that the \verb+NETCDF_DIR+ environment variable is set before configuring ADIOS with Automake.
+While with CMake, the environment variables should be set before running cmake:
+\begin{lstlisting}
+export SEQ_NC_DIR=<path>
+\end{lstlisting}
+
+\subsection{Serial HDF5 (optional)}
+
+The bp2h5 converter utility to HDF5 format is built only if a HDF5 library is available.
+Currently ADIOS uses the 1.6 version of the HDF5 API but it can be built and used
+with the 1.8.x version of the HDF5 library too. Use the option \verb+--with-hdf5=<path>+
+when configuring ADIOS with Automake or
+\begin{lstlisting}
+export SEQ_HDF5_DIR=<path>
+\end{lstlisting}
+\noindent with CMake.
+
+\subsection{Lustreapi (optional)}
+
+The Lustreapi library is used internally by \verb+MPI_LUSTRE+ and \verb+MPI_AMR+ method to
+figure out Lustre parameters such as stripe count and stripe size.  Without giving
+this option, users are expected to manually set Lustre parameters from ADIOS XML
+configuration file (see \verb+MPI_LUSTRE+ and \verb+MPI_AMR+ method).
+Use the configuration option
+\verb+--with-lustre=<path>+ to define the path to this library.
+
+\subsection{Staging transport methods (optional)}
+
+In \adiosversion, three transport methods
+are available for memory-to-memory transfer (staging) of data between two
+applications: The DataSpaces and DIMES libraries from Rutgers University and
+the Flexpath library from Georgia Tech. A wide-are-network transfer method (ICEE) is also available.
+
+\subsubsection{Networking libraries for staging}
+
+Staging methods use Remote Direct Memory Access (RDMA) operations, supported by specific libraries
+on various systems.
+
+\vspace*{6pt}
+\noindent {\bf Infiniband. }
+If you have an Infininband network with \verb+ibverbs+ and \verb+rdmacm+ libraries installed, you can configure ADIOS to use it for staging methods with the option
+\verb+--with-infiniband=DIR+  in Automake to define the path to the Infiniband libraries. In CMake, library ibverbs is detected by examining if function \verb+ibv_alloc_pd+ exists auomatically without extra effort by the user.
+
+\vspace*{6pt}
+\noindent {\bf Cray Gemini network. }
+On newer Cray machines (XK6 and XE6) with the Gemini network, the \verb+PMI+ and \verb+uGNI+ libraries are used by the staging methods. Configure ADIOS with the options in Automake
+
+\begin{lstlisting}
+--with-cray-pmi=/opt/cray/pmi/default \
+--with-cray-ugni-incdir=/opt/cray/gni-headers/default/include \
+--with-cray-ugni-libdir=/opt/cray/ugni/default/lib
+\end{lstlisting}
+
+\noindent or in CMake
+\begin{lstlisting}
+export CRAY_PMI_DIR=/opt/cray/pmi/default
+export CRAY_UGNI_DIR=/opt/cray/ugni/default
+\end{lstlisting}
+
+\vspace*{6pt}
+\noindent {\bf Portals. }
+Portals is an RDMA library from Sandia Labs, and it has been used on Cray XT5 machines with Seastar networks. Configure ADIOS with the option
+
+\verb+--with-portals=DIR      Location of Portals (yes/no/path_to_portals)+
+
+\subsubsection{DataSpaces staging method}
+The DataSpaces model provides a separate server running on separate compute nodes, into/from which data can be written/read with a geometrical (3D) abstraction. It is an efficient way to stage data from an application to one or more other applications in an asynchronous way. Multiple steps of data outputs can be stored, limited only by the available memory.
+It can also be used for interactive in-situ visualization, where the visualization can be multiple steps behind the application.
+DataSpaces can be downloaded from \url{http://www.dataspaces.org}
+
+\noindent Build the DataSpaces method with the option in Automake:
+
+\begin{lstlisting}
+--with-dataspaces=DIR  Build the DATASPACES transport method. Point to the
+                      DATASPACES installation.
+--with-dataspaces-incdir=<location of dataspaces includes>
+--with-dataspaces-libdir=<location of dataspaces library>
+\end{lstlisting}
+
+\noindent or in CMake
+\begin{lstlisting}
+export DATASPACES_DIR=<location of DATASPACES installation>
+\end{lstlisting}
+
+\subsubsection{DIMES staging method}
+In the DIMES model, the reading application pulls the data directly from the writer application's memory. It provides the same geometrical (3D) abstraction for writing/reading datasets as DataSpaces. It is an efficient way to stage data from one application to another in an asynchronous (and very fast) way. Only a single step of data output can be stored.
+DIMES is part of the DataSpaces library.
+
+\noindent Build the DIMES method with the option:
+
+\begin{lstlisting}
+--with-dimes=DIR  Build the DIMES transport method. Point to the
+                      DIMES installation.
+--with-dimes-incdir=<location of dimes includes>
+--with-dimes-libdir=<location of dimes library>
+\end{lstlisting}
+
+
+\subsubsection{Flexpath staging method}
+ Flexpath transport requires the Georgia Tech EVPath middleware library,
+ which is built from several packages, including some from the Chaos
+ repository at Georgia Tech and some from GitHub.  Those required packages
+ are: \verb+dill+, \verb+cercs_env+, \verb+enet+, \verb+atl+, \verb+ffs+,
+ and \verb+evpath+. 
+At present, the easiest way to get EVPath is to build it directly for your environment. In an empty directory do:
+\begin{lstlisting}
+   wget http://www.cc.gatech.edu/systems/projects/EVPath/chaos_bootstrap.pl
+\end{lstlisting}
+to download a bootstrapping perl script.  Then to configure a build
+environment compatible with ADIOS 1.8, run the bootstrap script with
+``adios-1.8'' as a version tag:
+\begin{lstlisting}
+  perl ./chaos_bootstrap.pl adios-1.8 [optional install directory]
+\end{lstlisting}
+
+If you leave off the the \verb+[optional install directory]+ argument, the
+script will set up an environment for an install target of
+\$HOME/\{lib,bin,include\}.  The bootstrap script will download several
+files.  After bootstrapping, run:
+\begin{lstlisting}
+  perl ./chaos_build.pl 
+\end{lstlisting}
+to build and install the GaTech packages required by Flexpath.
+
+\noindent To use ADIOS with Flexpath, configure adios with the option:
+
+\begin{lstlisting}
+--with-flexpath=DIR  Where DIR is the installation directory of
+                                      the Chaos libraries.
+\end{lstlisting}
+
+The default network transport for Flexpath is sockets. Additionally, you can use ENET and NNTI (allowing for Infiniband, Portals, and Gemini), both of which
+are included in the \verb+chaos_build.pl+ script. To use these transports, set the \verb+CMTransport+ environment variable to either \verb+``nnti''+ or \verb+``enet''+ before running your applications with Flexpath.
+
+Additionally, in the ADIOS XML file, we allow for the user to specify a \verb+Queuesize+ parameter specifying how many timesteps the writer can buffer before it blocks. For example,
+
+\begin{lstlisting}
+<method group="arrays" method="FLEXPATH">QUEUE_SIZE=10;</method>
+\end{lstlisting}
+
+
+\subsubsection{ICEE wide-area-network staging method}
+The ICEE method is based on the same EVPath middleware library from Georgia Tech as the Flexpath method, and therefore has the same requirements to build it. So when \verb+--with-flexpath+ is used, the ICEE method will also be built.
+
+
+
+%%% NCSU - Added data transforms text
+
+\subsection{Data transformation plugins (optional)}
+\label{sec:installation-data-transforms}
+
+The data transformation layer provides on-the-fly data transformation services, such as compression.
+While the data transformation layer itself is built automatically, each data transform plugin
+must be enabled during configuration. Typically, transform plugins act as a bridge between ADIOS and
+an external library supplying the actual transformation algorithms; in such cases, the location
+of this external library must also be specified.
+
+Note that data encoded using a transform plugin can only be read
+back by an ADIOS install configured with that same plugin enabled. For example,
+ADIOS must be configured with the zlib plugin to read back zlib-compressed
+data.
+
+Requirements for building the standard transform plugins
+included in ADIOS are listed below; for any other (research) transforms, see their accompanying
+documentation.
+
+\begin{itemize}
+\item
+To enable zlib lossless compression, configure ADIOS with the following flag:
+\begin{lstlisting}
+--with-zlib=DIR    Where DIR is the installation
+                   directory of zlib (usually "/usr").
+\end{lstlisting}
+
+\item
+To enable bzip2 lossless compression, configure ADIOS with the following flag:
+\begin{lstlisting}
+--with-bzip2=DIR    Where DIR is the installation
+                    directory of bzip2
+\end{lstlisting}
+Note: bzip2 is available on the Titan Cray supercomputer through a module load command,
+"module load bzip2", after which bzip2 can be configured with
+\verb+--with-bzip2=\$BZIP\_DIR+.
+
+\item
+To enable szip lossless compression, configure ADIOS with the following flag:
+\begin{lstlisting}
+--with-szip=DIR    Where DIR is the installation
+                   directory of szip
+\end{lstlisting}
+\end{itemize}
+
+See Section~\ref{sec:transform_plugins} for instructions on invoking data transforms once they have been properly configured,
+as well as some guidance on choosing transforms in practice.
+
+%%% NCSU - End added data transforms text
+
+\subsection{Query methods (optional)}
+\label{sec:installation-query-api}
+
+ADIOS has a Query API and currently it has one query engine for FastBit index. FastBit (\url{https://sdm.lbl.gov/fastbit}) can be downloaded from a public SVN repository:
+
+\begin{lstlisting}[language={}]
+svn co https://codeforge.lbl.gov/anonscm/fastbit/trunk
+\end{lstlisting}
+
+\noindent To enable the FastBit query method, configure ADIOS with the following flag:
+\begin{lstlisting}
+--with-fastbit=DIR    Where DIR is the installation
+                      directory of fastbit
+\end{lstlisting}
+
+
+
+
+\subsection{Read-only installation}
+
+If you just want the read API to be compiled for reading BP files, use the \verb+--disable-write+ option with Automake and \verb+export BUILD_WRITE=OFF+ with CMake.
+
+\subsection{PHDF5 (optional)}
+
+The transport method writing files in the Parallel HDF5 format is built only if
+a parallel version of the HDF5 library is available. You need to use the
+option \verb+--with-phdf5=<path>+ with Automake to build this transport method.
+While in CMake, you can build this method with
+\begin{lstlisting}
+export PAR_HDF5_DIR=<path>
+\end{lstlisting}
+
+\noindent Notes: Do not expect better performance with ADIOS/PHDF5 than with PHDF5 itself. ADIOS does not write differently to a HDF5 formatted file, it simply uses PHDF5 function calls to write out data. Also good to know, that the method in ADIOS uses the collective function calls, that requires that every process participates in the writing of each variable.
+
+If you define Parallel HDF5 and do not define serial HDF5, then bp2h5 will be built
+with the parallel library.
+Note that if you build this transport method, ADIOS will depend on PHDF5 when you
+link any application with ADIOS even if your application does not intend to
+use this method.
+If you have problems compiling ADIOS with PHDF5 due to missing flags or libraries,
+you can define them using
+
+\begin{lstlisting}
+--with-phdf5-incdir=<path>,
+--with-phdf5-libdir=<path> and
+--with-phdf5-libs=<link time flags and libraries>
+\end{lstlisting}
+
+\subsection{NetCDF-4 Parallel (optional)}
+
+The NC4 transport method writes files using the NetCDF-4 library which in turn
+is based on the parallel HDF5 library. You need to use the option
+\verb+--with-nc4par=<path>+ to build this transport method.
+You also need to provide the parallel HDF5 library.
+
+While with CMake, the environment variables are set by the folloing:
+\begin{lstlisting}
+export PAR_NC_DIR=<path>
+\end{lstlisting}
+
+\noindent Note: Do not expect better performance with ADIOS/NC4 than with NC4 itself. ADIOS does not write differently to a HDF5 formatted file, it simply uses NC4 function calls to write out data. Also good to know, that this method requires that every process participates in the writing of each variable.
+
+\section{Full Installation}
+
+\subsection{Full Installation with Automake}
+
+The following list is the complete set of options that can be used with
+configure to build ADIOS and its support utilities:
+
+\begin{lstlisting}
+--help              print the usage of ./configure command}
+--with-tags[=TAGS]  include additional configurations [automatic]
+--with-mxml=DIR     Location of Mini-XML library
+--with-infiniband=DIR      Location of Infiniband
+--with-portals=DIR      Location of Portals (yes/no/path_to_portals)
+--with-cray-pmi=<location of CRAY_PMI installation>
+--with-cray-pmi-incdir=<location of CRAY_PMI includes>
+--with-cray-pmi-libdir=<location of CRAY_PMI library>
+--with-cray-pmi-libs=<linker flags besides -L<cray-pmi-libdir>, e.g. -lpmi
+--with-cray-ugni=<location of CRAY UGNI installation>
+--with-cray-ugni-incdir=<location of CRAY UGNI includes>
+--with-cray-ugni-libdir=<location of CRAY UGNI library>
+--with-cray-ugni-libs=<linker flags besides -L<cray-ugni-libdir>, e.g. -lugni
+--with-hdf5=<location of HDF5 installation>
+--with-hdf5-incdir=<location of HDF5 includes>
+--with-hdf5-libdir=<location of HDF5 library>
+--with-phdf5=<location of PHDF5 installation>
+--with-phdf5-incdir=<location of PHDF5 includes>
+--with-phdf5-libdir=<location of PHDF5 library>
+--with-netcdf=<location of NetCDF installation>
+--with-netcdf-incdir=<location of NetCDF includes>
+--with-netcdf-libdir=<location of NetCDF library>
+--with-nc4par=<location of NetCDF 4 Parallel installation>
+--with-nc4par-incdir=<location of NetCDF 4 Parallel includes>
+--with-nc4par-libdir=<location of NetCDF 4 Parallel library>
+--with-nc4par-libs=<linker flags besides -L<nc4par_libdir>, e.g. -lnetcdf
+--with-dataspaces=<location of DataSpaces installation>
+--with-dataspaces-incdir=<location of DataSpaces includes>
+--with-dataspaces-libdir=<location of DataSpaces library>
+--with-dimes=<location of DataSpaces installation>
+--with-dimes-incdir=<location of dimes includes>
+--with-dimes-libdir=<location of dimes library>
+--with-flexpath=<location of the Chaos packages>
+--with-lustre=<location of Lustreapi library>
+\end{lstlisting}
+
+%--with-installed      Don''t use local copies of CERCS packages
+%--with-local          Use only local copies of CERCS packages
+%--with-gen_thread=DIR Where to find gen_thread package
+%--with-ibpbio=DIR     Where to find ibpbio package
+%--with-ffs=DIR        Where to find ffs package
+%--with-ptlpbio=DIR    Where to find ptlpbio package
+%--with-evpath=DIR     Where to find evpath package
+%--with-atl=DIR        Where to find atl package
+%--with-dill=DIR       Where to find dill package
+%--with-cercs_env=DIR  Where to find cercs_env package
+
+Some influential environment variables are lists below:
+
+\begin{lstlisting}
+CC        C compiler command
+CFLAGS    C compiler flags
+LDFLAGS   linker flags, e.g. -L<lib dir> if you have libraries
+          in a nonstandard directory <lib dir>
+CPPFLAGS  C/C++ preprocessor flags, e.g. -I<include dir> if you
+          have headers in a nonstandard directory <include dir>
+CPP       C preprocessor
+CXX       C++ compiler command
+CXXFLAGS  C++ compiler flags
+FC        Fortran compiler command
+FCFLAGS   Fortran compiler flags
+CXXCPP    C++ preprocessor
+F77       Fortran 77 compiler command
+FFLAGS    Fortran 77 compiler flags
+MPICC     MPI C compiler command
+MPIFC     MPI Fortran compiler command
+\end{lstlisting}
+
+\subsection{Full Installation with CMake}
+
+The following list is the complete set of options that can be used with configure to build ADIOS and its support utilities:
+
+\begin{lstlisting}
+export MXML_DIR=<location of mxml installation>
+export SEQ_NC_DIR=<location of sequential netcdf installation>
+export PAR_NC_DIR=<location of parallel netcdf installation>
+export SEQ_HDF5_DIR=<location of sequential hdf5 installation>
+export PAR_HDF5_DIR=<location of parallel hdf5 installation>
+export CRAY_UGNI_DIR=<location of CRAY UGNI installation>
+export CRAY_PMI_DIR=<location of CRAY_PMI installation>
+export DATASPACES_DIR=<location of DataSpaces installation>
+\end{lstlisting}
+
+Some influential environment variables are lists below:
+\begin{lstlisting}
+CC        C compiler command
+CFLAGS    C compiler flags
+LDFLAGS   linker flags, e.g. -L<lib dir> if you have libraries
+          in a nonstandard directory <lib dir>
+CXX       C++ compiler command
+CXXFLAGS  C++ compiler flags
+FC        Fortran compiler command
+FCFLAGS   Fortran compiler flags
+\end{lstlisting}
+
+\section{Compiling applications using ADIOS}
+\label{section:installation_compiling_apps}
+
+ADIOS configuration creates a text file that contains the flags and library dependencies
+that should be used when compiling/linking user applications that use ADIOS. This
+file is installed as \verb+bin/adios_config.flags+ under the installation directory by
+make install. A script, named \verb+adios_config+ is also installed that can print out
+selected flags. In a Makefile, if you set \verb+ADIOS_DIR+ to the installation directory
+of ADIOS, you can set the flags for building your code flexibly as shown below
+for a Fortran application:
+
+\begin{lstlisting}
+override ADIOS_DIR := <your ADIOS installation directory>
+override ADIOS_INC := $(shell ${ADIOS_DIR}/bin/adios_config -c -f)
+override ADIOS_FLIB := $(shell ${ADIOS_DIR}/bin/adios_config -l -f)
+
+example.o : example.F90
+        ${FC} -g -c ${ADIOS_INC} example.F90 $<
+
+example: example.o
+        ${FC} -g -o example example.o ${ADIOS_FLIB}
+\end{lstlisting}
+
+The example above is for using write (and read) in a Fortran + MPI application. However, several libraries are built for specific uses:
+
+\begin{itemize}
+\item \verb+libadios.a               +   MPI + C/C++ using ADIOS to write and read data
+\item \verb+libadiosf.a              +   MPI + Fortran using ADIOS to write and read data
+\item \verb+libadios_nompi.a         +   C/C++ without MPI
+\item \verb+libadiosf_nompi.a        +   Fortran without MPI
+\item \verb+libadiosread.a           +   MPI + C/C++ using ADIOS to only read data
+\item \verb+libadiosreadf.a          +   MPI + Fortran using ADIOS to only read data
+\item \verb+libadiosread_nompi.a     +   C/C++ without MPI, using ADIOS to only read data
+\item \verb+libadiosreadf_nompi.a    +   Fortran without MPI, using ADIOS to only read data
+\end{itemize}
+
+The C libraries include both the old and new API in one library. However, the old read API in Fortran has name clashes with the new API, therefore separate Fortran libraries are built for it:
+
+\begin{itemize}
+\item \verb+libadiosf_v1.a           +
+\item \verb+libadiosreadf_v1.a       +
+\item \verb+libadiosf_nompi_v1.a     +
+\item \verb+libadiosreadf_nompi_v1.a +
+\end{itemize}
+
+The following options in \verb+adios_config+ allows for setting the include and link flags for a specific build:
+
+\begin{lstlisting}
+adios_config [-d | -c | -l] [-f] [-r] [-s] [-1] [-v] [-i]
+Arguments
+   -d   Base directory for ADIOS install
+   -c   Compiler flags for C/C++, using ADIOS write/read methods
+   -l   Linker flags for C/C++, using ADIOS write/read methods
+
+   -f   Print above flags for Fortran90
+   -r   Print above flags for using ADIOS read library only.
+   -s   Print above flags for using ADIOS in a sequential code (no MPI).
+   -1   Print above flags for using old Read API of ADIOS.
+
+   -m   Print available write/read methods and data transformation methods
+
+   -v   Version of the installed package
+   -i   More installation information about the package
+
+Notes
+   - Multiple options of d,c,l are enabled. In such a case, the output is
+     a list of FLAG=flags, where FLAG is one of (DIR, CFLAGS, LDFLAGS)
+   - If none of d,c,l are given, all of them is printed
+   - If none of f,r,s are given, flags for C/C++, using ADIOS write/read
+     methods are printed
+   - -m can be combined with -r (readonly libraries) and -s (sequential libraries)
+\end{lstlisting}
+
+That is, for example, \verb+adios_config -lfrs+ will print the \emph{link} flags for building
+a \emph{sequential Fortran} application that \emph{only reads} data with ADIOS.
+
+\subsection{Sequential applications}
+
+Use the \verb+-D_NOMPI+ pre-processor flag to compile your application
+for a sequential build. ADIOS has a dummy MPI library, \verb+mpidummy.h+, that re-defines
+all MPI constructs necessary to run ADIOS without MPI. You can declare
+
+\verb+MPI_Comm comm;+
+
+in your sequential code to pass it on to functions that require an \verb+MPI_Comm+ variable.
+
+If you want to write a C/C++ parallel code using MPI, but also want to provide it as a
+sequential tool on a login-node without modifying the source code, then write your
+application as MPI, do not include \verb+mpi.h+ but include
+\verb+adios.h+ or \verb+adios_read.h+.
+They include the appropriate header file
+\verb+mpi.h+ or \verb+mpidummy.h+
+(the latter provided by ADIOS) depending on which version you want to build.
+
+
+\section{Language bindings}
+
+ADIOS comes with various bindings to languages, that are not built with the Automake tools discussed above. After building ADIOS, these bindings have to be manually built.
+
+\subsection{Support for Matlab}
+\label{section-install-matlab}
+
+Matlab requires ADIOS be built with the GNU C compiler. It also requires relocatable
+codes, so you need to add the -fPIC flag to CFLAGS before configuring ADIOS.
+You need to compile it with Matlab's MEX compiler after the make and copy the files
+manually to somewhere where Matlab can see them or set the \verb+MATLABPATH+ to this
+directory to let Matlab know where to look for the bindings.
+
+\begin{lstlisting}
+cd wrappers/matlab
+make matlab
+\end{lstlisting}
+
+
+\subsection{Support for Java}
+\label{section-install-java}
+
+ADIOS provides a Java language binding implemented by the Java Native Interface (JNI).
+The program can be built with CMake (\url{http://www.cmake.org/}) which will detect your ADIOS installation and related programs and libraries. With CMake, you can create a build directory and run cmake pointing the Java wrapper source directory (wrappers/java) containing CMakeLists.txt. For example,
+\begin{lstlisting}
+cd wrappers/java
+mkdir build
+cd build
+cmake ..
+\end{lstlisting}
+
+CMake will search installed ADIOS libraries, Java, JNI, MPI libraries (if
+needed), etc. Once completed, type \verb+make+ to build. If you need verbose output, you type as follows:
+\begin{lstlisting}
+make VERBOSE=1
+\end{lstlisting}
+
+After successful building, you will see libAdiosJava.so (or
+libAdiosJava.dylib in Mac) and AdiosJava.jar. Those two files will be needed to use in Java. Detailed instructions for using this Java binding will be discussed in Section~\ref{section-bindings-java}.
+
+If you want to install those files, type the following:
+\begin{lstlisting}
+make install
+\end{lstlisting}
+
+The default installation directory is \verb+/usr/local+. You can change by
+specifying \verb+CMAKE_INSTALL_PREFIX+ value;
+\begin{lstlisting}
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/install /dir/to/source
+\end{lstlisting}
+
+Or, you can use the \verb+ccmake+ command, the CMake curses interface. Please refer to the CMake documents for more detailed instructions.
+
+This program contains a few test programs. To run testing after building,
+type the following command:
+\begin{lstlisting}
+make test
+\end{lstlisting}
+
+If you need a verbose output, type the following
+\begin{lstlisting}
+ctest -V
+\end{lstlisting}
+
+\subsection{Support for Numpy}
+\label{section-install-numpy}
+
+ADIOS also provides two Python/Numpy language bindings developed by Cython; One is a binding for serial ADIOS (default), which requires no MPI, and the other is a MPI-enabled binding (optional). Like Matlab, ADIOS Python/Numpy wrapper requires ADIOS built by the GNU C compiler with relocatable codes. Add -fPIC flag to CFLAGS before configuring ADIOS. In addition, Python Numpy is required before building Adios Python/Numpy binding and MPI4Py is optional, if users want to build parallel python module.
+
+The following command will build a Python/Numpy binding for serial ADIOS (\verb+adios_config+ and \verb+python+ should be in the path):
+\begin{lstlisting}
+cd wrappers/numpy
+make python
+\end{lstlisting}
+
+If you need a MPI-enabled binding, which requires MPI4Py installed, type the following:
+
+\begin{lstlisting}
+make MPI=y python
+\end{lstlisting}
+
+After successful building, you need to install them in a python path. There are three options.
+
+\begin{lstlisting}
+python setup.py install
+\end{lstlisting}
+will install python's default installation location. This may require an admin privilege. If you want to install in a custom directory, type
+\begin{lstlisting}
+python setup.py install --prefix=/dir/to/install
+\end{lstlisting}
+and append the directory to the \verb+PYTHONPATH+ environment variable. You can also install in your local directory. Use the following command:
+\begin{lstlisting}
+python setup.py install --user
+\end{lstlisting}
+
+Another way to install ADIOS python wrapper is using pip which is a package management system in Python. With pip installed in your system, run the following command:
+
+\begin{lstlisting}
+pip install adios
+pip install adios_mpi
+\end{lstlisting}

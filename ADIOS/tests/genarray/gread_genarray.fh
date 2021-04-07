@@ -1,0 +1,13 @@
+call adios_selection_writeblock (s, rank)
+call adios_schedule_read (fp, s, "var1", 0, 1, double_xyz, adios_err)
+call adios_schedule_read (fp, s, "var2", 0, 1, double_xyz, adios_err)
+call adios_schedule_read (fp, s, "var3", 0, 1, double_xyz, adios_err)
+call adios_schedule_read (fp, s, "var4", 0, 1, double_xyz, adios_err)
+call adios_schedule_read (fp, s, "var5", 0, 1, double_xyz, adios_err)
+call adios_schedule_read (fp, s, "var6", 0, 1, double_xyz, adios_err)
+call adios_schedule_read (fp, s, "var7", 0, 1, double_xyz, adios_err)
+call adios_schedule_read (fp, s, "var8", 0, 1, double_xyz, adios_err)
+call adios_schedule_read (fp, s, "var9", 0, 1, double_xyz, adios_err)
+
+call adios_perform_reads (fp, adios_err)
+call adios_selection_delete (s)

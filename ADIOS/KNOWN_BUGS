@@ -1,0 +1,19 @@
+
+Writing data
+============
+
+- No-XML writing: The following scenario is not supported:
+  Define arrays sizes and offsets with numbers in the source code instead of references to scalar variables also written to the output AND write multiple blocks of the same variable from one process. The (bad) result is that each block's size definition will equal to the first definition.  
+  Solution: save the IDs returned by adios_define_variable() and use adios_write_byid() instead of adios_write()
+
+Reading data
+============
+
+- Statistics: scalars over time have no statistics calculated when queried with adios_inq_var_stat(). Only the value written by rank 0 at the first step is seen. 
+Work around: adios_inq_var_stat() returns per-step statistics too, and at each step min/max equals the value at that step, so one can calculate a global min/max over time from this list. 
+
+
+
+
+
+

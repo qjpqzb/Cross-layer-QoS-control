@@ -1,0 +1,45 @@
+adios_groupsize = 4 &
+                + 4 &
+                + 4 &
+                + 4 &
+                + 4 &
+                + 4 &
+                + 4 &
+                + 4 &
+                + 4 &
+                + 4 &
+                + 4 &
+                + 4 &
+                + 4 &
+                + 8 * (ndx) * (ndy) * (ndz) &
+                + 8 * (ndx) * (ndy) * (ndz) &
+                + 8 * (ndx) * (ndy) * (ndz) &
+                + 8 * (ndx) * (ndy) * (ndz) &
+                + 8 * (ndx) * (ndy) * (ndz) &
+                + 8 * (ndx) * (ndy) * (ndz) &
+                + 8 * (ndx) * (ndy) * (ndz) &
+                + 8 * (ndx) * (ndy) * (ndz) &
+                + 8 * (ndx) * (ndy) * (ndz)
+call adios_group_size (adios_handle, adios_groupsize, adios_totalsize, adios_err)
+call adios_write (adios_handle, "/dimensions/gndx", gndx, adios_err)
+call adios_write (adios_handle, "/dimensions/gndy", gndy, adios_err)
+call adios_write (adios_handle, "/dimensions/gndz", gndz, adios_err)
+call adios_write (adios_handle, "/info/nproc", nproc, adios_err)
+call adios_write (adios_handle, "/info/npx", npx, adios_err)
+call adios_write (adios_handle, "/info/npy", npy, adios_err)
+call adios_write (adios_handle, "/info/npz", npz, adios_err)
+call adios_write (adios_handle, "/aux/offx", offx, adios_err)
+call adios_write (adios_handle, "/aux/offy", offy, adios_err)
+call adios_write (adios_handle, "/aux/offz", offz, adios_err)
+call adios_write (adios_handle, "/aux/ndx", ndx, adios_err)
+call adios_write (adios_handle, "/aux/ndy", ndy, adios_err)
+call adios_write (adios_handle, "/aux/ndz", ndz, adios_err)
+call adios_write (adios_handle, "/var/var1", double_xyz, adios_err)
+call adios_write (adios_handle, "/var/var2", double_xyz, adios_err)
+call adios_write (adios_handle, "/var/var3", double_xyz, adios_err)
+call adios_write (adios_handle, "/var/var4", double_xyz, adios_err)
+call adios_write (adios_handle, "/var/var5", double_xyz, adios_err)
+call adios_write (adios_handle, "/var/var6", double_xyz, adios_err)
+call adios_write (adios_handle, "/var/var7", double_xyz, adios_err)
+call adios_write (adios_handle, "/var/var8", double_xyz, adios_err)
+call adios_write (adios_handle, "/var/var9", double_xyz, adios_err)
