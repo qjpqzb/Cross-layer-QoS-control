@@ -1,4 +1,4 @@
-##Cross Layer QoS Control
+## Cross Layer QoS Control
 This repository contains materials to reproduce the results for SC 2021 paper "It Takes Two to Tango: Reconciling Application and Storage to Manage I/O Interference on CGroups-based Storage
 
 ## Prerequisite
@@ -32,7 +32,6 @@ This repository contains materials to reproduce the results for SC 2021 paper "I
 ```sh
 python qos_control.py [ERROR_CONTROL_BOOL] [WEIGHT_BOOL] [RUN_START_TIME]
 ```
-where 
 ERROR\_CONTROL\_BOOL : The bollean to specify whether the error control is on or not. (Can be "on" or "off")
 WEIGHT\_BOOL: The bollean to specify whether the dynamic weight adjustment is on or not. (Can be "on" or "off")
 RUN\_START\_TIME: The start time of the code. (Can be the format "HOUR MINITE SECOND" or "now")
