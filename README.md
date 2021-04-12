@@ -21,8 +21,8 @@ This repository contains materials to reproduce the results for SC 2021 paper "I
 |error\_metric|The error control metrics (Can be "NRMSE" or "PSNR")|
 |error\_target|The enforced error tolerance|
 |priority|The priority of application|
-|min\_priority|The minimum priority among all applciations|
-|max\_priority|The maximum priority among all applciations|
+|min\_priority|The minimum priority among all applications|
+|max\_priority|The maximum priority among all applications|
 |min\_accuracy|The lowest accuracy requirement|
 |max\_accuracy|The highest accuracy requirement|
 |error\_target\_list|All accuracy levels|
