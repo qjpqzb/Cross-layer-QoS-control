@@ -1,5 +1,5 @@
 ## Cross Layer QoS Control
-This repository contains materials to reproduce the results for SC 2021 paper "It Takes Two to Tango: Reconciling Application and Storage to Manage I/O Interference on CGroups-based Storage
+This repository contains materials to reproduce the results for SC 2021 paper "It Takes Two to Tango: Reconciling Application and Storage to Manage I/O Interference on CGroups-based Storage".
 
 ## Prerequisite
 1. We set up our experiment environment usings docker (v20.10.5). Please refer to [Docker documentation](https://docs.docker.com/engine/install/ubuntu/) for installation instructions. The image we use to create containers is "jrei/systemd-ubuntu:18.04";
@@ -8,8 +8,9 @@ This repository contains materials to reproduce the results for SC 2021 paper "I
 ## How to reproduce the results
 1. Create volume group and logical volume on HDD on host node which will be shared among all containers;
 2. Create containers. Bind mount the HDD volume to each container;
-3. We use three Applciations for evaluation, you can find the these datasets under "/ADIOS/examples/C/global-array/larger\_data/current\_data/". And the decimation ratio can be set via editing "/ADIOS/examples/C/global-array/test\_xgc.xml" before running "/ADIOS/examples/C/global-array/test\_xgc" to refactor and write reduced base dataset to SSD and deltas to HDD;
+3. We use three Applications for evaluation, you can find the these data sets under "/ADIOS/examples/C/global-array/larger\_data/current\_data/". And the decimation ratio can be set via editing "/ADIOS/examples/C/global-array/test\_xgc.xml" before running "/ADIOS/examples/C/global-array/test\_xgc" to refactor and write reduced base data to SSD and deltas to HDD;
 4. Our cross layer qos control method can be run through "qos\_control.py". The parameters you need to set before run are listed below.
+
 | Parameters | Description |
 | ------ | ------ |
 |application\_name| The name of application|
@@ -27,13 +28,13 @@ This repository contains materials to reproduce the results for SC 2021 paper "I
 |error\_target\_list|All accuracy levels|
 |docker\_path\_id|The container id|
 |weight\_tag|Different weight function (Can be "size", "size\_priority", "size\_priority\_accuracy")|
-5. After setting up all the parameters, you also need to set up the period and intensity of interferences in each container. Then we are ready to run data analytics in one container and interferences applcaitions (noise.py) in the other containers;
+5. After setting up all the parameters, you also need to set up the period and intensity of interference in each container. Then we are ready to run data analytics in one container and interference applications (noise.py) in the other containers;
 6. The QoS run takes this form:
 ```sh
 python qos_control.py [ERROR_CONTROL_BOOL] [WEIGHT_BOOL] [RUN_START_TIME]
 ```
-ERROR\_CONTROL\_BOOL : The bollean to specify whether the error control is on or not. (Can be "on" or "off")
-WEIGHT\_BOOL: The bollean to specify whether the dynamic weight adjustment is on or not. (Can be "on" or "off")
+ERROR\_CONTROL\_BOOL : The Boolean to specify whether the error control is on or not. (Can be "on" or "off")
+WEIGHT\_BOOL: The Boolean to specify whether the dynamic weight adjustment is on or not. (Can be "on" or "off")
 RUN\_START\_TIME: The start time of the code. (Can be the format "HOUR MINITE SECOND" or "now")
 "
 
