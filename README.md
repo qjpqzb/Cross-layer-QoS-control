@@ -25,7 +25,8 @@ This repository contains materials to reproduce the results for SC 2021 paper "I
 |max\_priority|The maximum priority among all applications|
 |min\_accuracy|The lowest accuracy requirement|
 |max\_accuracy|The highest accuracy requirement|
-|error\_target\_list|All accuracy levels|
+|nrmse\_target\_list|All available error tolerances regarding to NRMSE|
+|psnr\_target\_list|All available error tolerances regarding to PSNR|
 |docker\_path\_id|The container id|
 |weight\_tag|Different weight function (Can be "size", "size\_priority", "size\_priority\_accuracy")|
 5. After setting up all the parameters, you also need to set up the period and intensity of interference in each container. Then we are ready to run data analytics in one container and interference applications (noise.py) in the other containers;
