@@ -38,4 +38,4 @@ ERROR\_CONTROL\_BOOL : The Boolean to specify whether the error control is on or
 WEIGHT\_BOOL: The Boolean to specify whether the dynamic weight adjustment is on or not. (Can be "on" or "off")
 RUN\_START\_TIME: The start time of the code. (Can be the format "HOUR MINITE SECOND" or "now")
 "
-
+7. You can use any cloud platform to reproduce the results in paper, just make sure you run the applications and cross layer qos control scripts in dockers.
