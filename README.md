@@ -2,7 +2,7 @@
 This repository contains materials to reproduce the results for SC 2021 paper "It Takes Two to Tango: Reconciling Application and Storage to Manage I/O Interference on CGroups-based Storage".
 
 ## Prerequisite
-1. We set up our experiment environment usings docker (v20.10.5). Please refer to [Docker documentation](https://docs.docker.com/engine/install/ubuntu/) for installation instructions. The image we use to create containers is "jrei/systemd-ubuntu:18.04";
+1. We set up our experiment environment usings docker (v20.10.5). Please refer to [Docker documentation](https://docs.docker.com/engine/install/ubuntu/) for installation instructions. The image we use to create containers is "jrei/systemd-ubuntu:18.04" which you can directly pull using "docker pull jrei/systemd-ubuntu";
 2. We use ADIOS as the data management framework to refactor and write scientific data generated from simulations to storage systems. Please refer to the [ADIOS documentation](https://www.olcf.ornl.gov/center-projects/adios/) for installation instructions.
 
 ## How to reproduce the results
